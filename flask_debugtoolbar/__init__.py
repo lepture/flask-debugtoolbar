@@ -3,7 +3,6 @@ import os
 from flask import Blueprint, current_app, request, g, send_from_directory
 from flask.globals import _request_ctx_stack
 from jinja2 import Environment, PackageLoader
-from werkzeug.exceptions import HTTPException
 from werkzeug.urls import url_quote_plus
 
 from flask_debugtoolbar.compat import iteritems
@@ -69,6 +68,7 @@ class DebugToolbarExtension(object):
                 "The Flask-DebugToolbar requires the 'SECRET_KEY' config "
                 "var to be set")
 
+        self.jinja_env.globals['scripts'] = app.config.get('DEBUG_TB_SCRIPTS')
         DebugToolbar.load_panels(app)
 
         app.before_request(self.process_request)
@@ -88,6 +88,10 @@ class DebugToolbarExtension(object):
             'DEBUG_TB_ENABLED': app.debug,
             'DEBUG_TB_HOSTS': (),
             'DEBUG_TB_INTERCEPT_REDIRECTS': True,
+            'DEBUG_TB_SCRIPTS': (
+                'jquery.js',
+                'jquery.tablesorter.js',
+            ),
             'DEBUG_TB_PANELS': (
                 'flask_debugtoolbar.panels.versions.VersionDebugPanel',
                 'flask_debugtoolbar.panels.timer.TimerDebugPanel',
